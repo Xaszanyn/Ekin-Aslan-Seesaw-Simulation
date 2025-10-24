@@ -12,11 +12,32 @@ const [
 const resetButton = document.querySelector("#reset");
 const seesawObjects = document.querySelector("#seesaw-objects");
 
-var state = {
+//TODO merge left & right, format state
+
+var state = JSON.parse(localStorage.getItem("seesaw")) ?? {
   left: [],
   right: [],
   tiltAngle: 0,
 };
+
+function initialize() {
+  //TODO remove recalculation
+
+  seesaw.style.transform = `translateX(-50%) rotate(${state.tiltAngle}deg)`;
+  tiltAngleText.textContent = `${state.tiltAngle}°`;
+
+  state.left.map((object) =>
+    createSeesawObject(object[0], object[1], object[2])
+  );
+
+  state.right.map((object) =>
+    createSeesawObject(object[0], -object[1], object[2])
+  );
+
+  calculateObjectsPosition();
+}
+
+initialize();
 
 var nextWeight = Math.ceil(Math.random() * 10);
 var previewWeight;
@@ -34,8 +55,8 @@ function setNextObject() {
   nextWeightText.textContent = `${nextWeight}.0 kg`;
 }
 
-function addObject(weight, distance, direction) {
-  state[direction ? "left" : "right"].push([weight, distance]);
+function addObject(weight, distance, direction, color) {
+  state[direction ? "left" : "right"].push([weight, distance, color]);
   localStorage.setItem("seesaw", JSON.stringify(state));
 }
 
@@ -56,7 +77,8 @@ objectScreen.addEventListener("click", () => {
   addObject(
     previewWeight,
     Math.abs(200 - previewPosition[0]),
-    previewPosition[0] <= 200
+    previewPosition[0] <= 200,
+    preview.style.backgroundColor
   );
   createSeesawObject(
     previewWeight,
@@ -99,6 +121,7 @@ function calculateTiltAngle() {
     Math.round(Math.tanh(Math.log(rightTorque / leftTorque)) * 30 * 100) / 100;
   seesaw.style.transform = `translateX(-50%) rotate(${state.tiltAngle}deg)`;
   tiltAngleText.textContent = `${state.tiltAngle}°`;
+  localStorage.setItem("seesaw", JSON.stringify(state));
 }
 
 function calculateObjectsPosition() {
@@ -132,6 +155,8 @@ resetButton.addEventListener("click", () => {
   seesaw.style.transform = `translateX(-50%) rotate(0deg)`;
 
   localStorage.removeItem("seesaw");
+
+  seesawObjects.innerHTML = "";
 });
 
 function createSeesawObject(weight, position, color, initialPosition) {
@@ -141,14 +166,11 @@ function createSeesawObject(weight, position, color, initialPosition) {
   object.style.height = `${45 + (weight - 1) * 3}px`;
   object.textContent = `${weight} kg`;
   object.style.backgroundColor = color;
-  object.style.top = `${initialPosition[1] - 150}px`;
-  object.style.left = `${initialPosition[0] - 200}px`;
+  if (initialPosition) {
+    object.style.top = `${initialPosition[1] - 150}px`;
+    object.style.left = `${initialPosition[0] - 200}px`;
+  }
   object.dataset.position = position;
 
   seesawObjects.append(object);
-
-  //   setTimeout(() => {
-  //     object.style.top = `0px`;
-  //     object.style.left = `0px`;
-  //   }, 4);
 }
