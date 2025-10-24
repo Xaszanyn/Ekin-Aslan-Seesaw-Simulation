@@ -11,6 +11,7 @@ const [
 ] = document.querySelectorAll("#stats span");
 const resetButton = document.querySelector("#reset");
 const seesawObjects = document.querySelector("#seesaw-objects");
+const log = document.querySelector("#log");
 
 //TODO merge left & right, format state
 
@@ -22,6 +23,28 @@ var state = JSON.parse(localStorage.getItem("seesaw")) ?? {
 
 function initialize() {
   //TODO remove recalculation
+
+  if (!state.left.length && !state.right.length) return;
+
+  leftWeightText.textContent = `${state.left.reduce(
+    (weight, object) => weight + object[0],
+    0
+  )}.0 kg`;
+  rightWeightText.textContent = `${state.right.reduce(
+    (weight, object) => weight + object[0],
+    0
+  )}.0 kg`;
+
+  let leftTorque = state.left.reduce(
+    (torque, object) => torque + object[0] * object[1],
+    0
+  );
+  let rightTorque = state.right.reduce(
+    (torque, object) => torque + object[0] * object[1],
+    0
+  );
+  leftTorqueText.textContent = `${leftTorque}.0 Nm`;
+  rightTorqueText.textContent = `${rightTorque}.0 Nm`;
 
   seesaw.style.transform = `translateX(-50%) rotate(${state.tiltAngle}deg)`;
   tiltAngleText.textContent = `${state.tiltAngle}°`;
@@ -85,6 +108,11 @@ objectScreen.addEventListener("click", () => {
     200 - previewPosition[0],
     preview.style.backgroundColor,
     previewPosition
+  );
+  addLog(
+    previewWeight,
+    previewPosition[0] <= 200,
+    Math.abs(200 - previewPosition[0])
   );
   calculateTiltAngle();
   calculateObjectsPosition();
@@ -157,6 +185,7 @@ resetButton.addEventListener("click", () => {
   localStorage.removeItem("seesaw");
 
   seesawObjects.innerHTML = "";
+  log.innerHTML = "";
 });
 
 function createSeesawObject(weight, position, color, initialPosition) {
@@ -173,4 +202,14 @@ function createSeesawObject(weight, position, color, initialPosition) {
   object.dataset.position = position;
 
   seesawObjects.append(object);
+}
+
+function addLog(weight, direction, distance) {
+  let newLog = document.createElement("div");
+  newLog.classList.add("initial");
+  newLog.textContent = `${weight}.0 kg was dropped on the ${
+    direction ? "left" : "right"
+  } side at ${distance}.0 cm (${distance}px) from the pivot.`;
+  log.insertBefore(newLog, log.firstElementChild);
+  setTimeout(() => newLog.classList.remove("initial"), 4);
 }
