@@ -2,6 +2,14 @@ const objectScreen = document.querySelector("#object-screen");
 const preview = document.querySelector("#preview");
 const nextWeightText = document.querySelector("#next-weight span");
 const seesaw = document.querySelector("#seesaw");
+const [
+  leftWeightText,
+  leftTorqueText,
+  tiltAngleText,
+  rightTorqueText,
+  rightWeightText,
+] = document.querySelectorAll("#stats span");
+const resetButton = document.querySelector("#reset");
 
 var state = {
   left: [],
@@ -58,19 +66,48 @@ setNextObject();
 function calculateTiltAngle() {
   if (!state.left.length && !state.right.length) return;
 
-  let torqueLeft = state.left.reduce(
+  leftWeightText.textContent = `${state.left.reduce(
+    (weight, object) => weight + object[0],
+    0
+  )}.0 kg`;
+  rightWeightText.textContent = `${state.right.reduce(
+    (weight, object) => weight + object[0],
+    0
+  )}.0 kg`;
+
+  let leftTorque = state.left.reduce(
     (torque, object) => torque + object[0] * object[1],
     0
   );
-  let torqueRight = state.right.reduce(
+  let rightTorque = state.right.reduce(
     (torque, object) => torque + object[0] * object[1],
     0
   );
+  leftTorqueText.textContent = `${leftTorque}.0 Nm`;
+  rightTorqueText.textContent = `${rightTorque}.0 Nm`;
 
   //! Hyperbolic tangent for practicality, for now.
   state.tiltAngle =
-    Math.round(Math.tanh(Math.log(torqueRight / torqueLeft)) * 30 * 100) / 100;
+    Math.round(Math.tanh(Math.log(rightTorque / leftTorque)) * 30 * 100) / 100;
   seesaw.style.transform = `translateX(-50%) rotate(${state.tiltAngle}deg)`;
+  tiltAngleText.textContent = `${state.tiltAngle}°`;
 
   console.log(state.tiltAngle);
 }
+
+resetButton.addEventListener("click", () => {
+  state = {
+    left: [],
+    right: [],
+    tiltAngle: 0,
+  };
+
+  leftWeightText.textContent = rightWeightText.textContent = "0.0 kg";
+  leftTorqueText.textContent = rightTorqueText.textContent = "0.0 Nm";
+
+  tiltAngleText.textContent = "0.0°";
+
+  seesaw.style.transform = `translateX(-50%) rotate(0deg)`;
+
+  localStorage.removeItem("seesaw");
+});
