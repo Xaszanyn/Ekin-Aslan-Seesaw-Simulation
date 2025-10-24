@@ -40,7 +40,7 @@ main {
   gap: 30px;
 }
 
-#controls {
+#controls-section {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -60,7 +60,7 @@ main {
   }
 }
 
-#stats {
+#stats-section {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
   gap: 30px;
@@ -84,14 +84,14 @@ main {
   }
 }
 
-#screen {
+#seesaw-section {
   position: relative;
   height: 400px;
   background-color: var(--light-blue);
   border-top-left-radius: 8px;
   border-top-right-radius: 8px;
 
-  #pivot {
+  #base {
     position: absolute;
     left: 50%;
     top: 50%;

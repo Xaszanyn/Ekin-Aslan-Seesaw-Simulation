@@ -8,21 +8,21 @@
   </head>
   <body>
     <main>
-      <section id="controls">
+      <section id="controls-section">
         <div id="next-weight">Next Weight <span class="text">0.0 kg</span></div>
         <button id="reset-button">Reset Seesaw</button>
       </section>
-      <section id="stats">
+      <section id="stats-section">
         <div>Left Weight <span class="text">0.0 kg</span></div>
         <div>Left Torque <span class="text">0.0 Nm</span></div>
         <div>Tilt Angle <span class="text">0.0°</span></div>
         <div>Right Torque <span class="text">0.0 Nm</span></div>
         <div>Right Weight <span class="text">0.0 kg</span></div>
       </section>
-      <section id="screen">
-        <div id="pivot"></div>
+      <section id="seesaw-section">
+        <div id="base"></div>
         <div id="seesaw" style="transform: translateX(-50%)"></div>
-        <div id="object-container"></div>
+        <div id="object-container"><!-- Pivot Point --></div>
         <div id="interaction-layer">
           <div id="preview-object" class="object" style="display: none">
             0 kg
@@ -31,6 +31,6 @@
       </section>
       <section id="log-section"></section>
     </main>
-    <script src="./script.js" type="module"></script>
+    <script src="./js/script.js" type="module"></script>
   </body>
 </html>

@@ -3,7 +3,7 @@ import {
   objectContainer,
   interactionLayer,
   previewObject,
-} from "./js/elements.js";
+} from "./elements.js";
 
 import {
   updateSeesaw,
@@ -19,9 +19,9 @@ import {
   log,
   updatePreviewObject,
   movePreviewObject,
-} from "./js/ui.js";
+} from "./ui.js";
 
-import { loadState, saveState, resetState } from "./js/util.js";
+import { loadState, saveState, resetState } from "./storage.js";
 
 var state = loadState(); //* { objects, tiltAngle, nextWeight, previewWeight, previewPosition }
 
@@ -36,9 +36,10 @@ function previewNextObject() {
 }
 
 (function initialize() {
-  state.objects.map(
-    (object) => createObject(object[0], [object[1], 150], object[2]) //* 150 is initial y value.
-  );
+  state.objects.map((object) => {
+    createObject(object[0], [object[1], 150], object[2]); //* 150 is initial y value.
+    log(object[0], object[1]);
+  });
 
   calculateTiltAngle();
   calculateObjectsPosition();

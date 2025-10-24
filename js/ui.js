@@ -81,7 +81,9 @@ export function log(weight, distance) {
   log.classList.add("initial");
   log.textContent = `${weight}.0 kg was dropped on the ${
     distance <= 200 ? "left" : "right"
-  } side at ${Math.abs(distance)}.0 cm (${distance}px) from the pivot.`;
+  } side at ${Math.abs(200 - distance)}.0 cm (${
+    distance - 200
+  }px) from the pivot.`;
 
   logSection.insertBefore(log, logSection.firstElementChild);
   setTimeout(() => log.classList.remove("initial"), 4);
