@@ -15,79 +15,41 @@ import {
   updateRightWeight,
   resetAll,
   createObject,
+  updateObject,
   log,
+  updatePreviewObject,
+  movePreviewObject,
 } from "./js/ui.js";
 
-//TODO merge left & right, format state
+import { loadState, saveState, resetState } from "./js/util.js";
 
-var state = JSON.parse(localStorage.getItem("seesaw")) ?? {
-  left: [],
-  right: [],
-  tiltAngle: 0,
-};
+var state = loadState(); //* { objects, tiltAngle, nextWeight, previewWeight, previewPosition }
 
-function initialize() {
-  //TODO remove recalculation
+function previewNextObject() {
+  state.color = `hsl(${Math.ceil(Math.random() * 360)} 100% 70%)`;
+  //TODO Themed Colors
+  updatePreviewObject(state.nextWeight, state.color);
+  state.previewWeight = state.nextWeight;
 
-  if (!state.left.length && !state.right.length) return;
+  state.nextWeight = Math.ceil(Math.random() * 10);
+  updateNextWeight(state.nextWeight);
+}
 
-  updateLeftWeight(
-    state.left.reduce((weight, object) => weight + object[0], 0)
+(function initialize() {
+  state.objects.map(
+    (object) => createObject(object[0], [object[1], 150], object[2]) //* 150 is initial y value.
   );
-  updateRightWeight(
-    state.right.reduce((weight, object) => weight + object[0], 0)
-  );
 
-  let leftTorque = state.left.reduce(
-    (torque, object) => torque + object[0] * object[1],
-    0
-  );
-  let rightTorque = state.right.reduce(
-    (torque, object) => torque + object[0] * object[1],
-    0
-  );
-  updateLeftTorque(leftTorque);
-  updateRightTorque(rightTorque);
-
-  updateSeesaw(state.tiltAngle);
-  updateTiltAngle(state.tiltAngle);
-
-  state.left.map((object) => createObject(object[0], object[1], object[2]));
-
-  state.right.map((object) => createObject(object[0], -object[1], object[2]));
-
+  calculateTiltAngle();
   calculateObjectsPosition();
-}
 
-initialize();
-
-var nextWeight = Math.ceil(Math.random() * 10);
-var previewWeight;
-var previewPosition;
-
-function setNextObject() {
-  previewObject.style.width = `${45 + (nextWeight - 1) * 3}px`;
-  previewObject.style.height = `${45 + (nextWeight - 1) * 3}px`;
-  previewObject.style.backgroundColor = `hsl(${Math.ceil(
-    Math.random() * 360
-  )} 100% 70%)`;
-  previewObject.textContent = `${nextWeight} kg`;
-  previewWeight = nextWeight;
-  nextWeight = Math.ceil(Math.random() * 10);
-  updateNextWeight(nextWeight);
-}
-
-function addObject(weight, distance, direction, color) {
-  state[direction ? "left" : "right"].push([weight, distance, color]);
-  localStorage.setItem("seesaw", JSON.stringify(state));
-}
+  previewNextObject();
+})();
 
 interactionLayer.addEventListener("mousemove", ({ offsetX, offsetY }) => {
-  previewObject.style.display = "flex";
   offsetX = Math.min(400, Math.max(0, offsetX));
-  previewPosition = [offsetX, offsetY];
-  previewObject.style.top = `${offsetY}px`;
-  previewObject.style.left = `${offsetX}px`;
+  state.previewPosition = [offsetX, offsetY];
+  movePreviewObject(offsetX, offsetY);
 });
 
 interactionLayer.addEventListener(
@@ -96,84 +58,68 @@ interactionLayer.addEventListener(
 );
 
 interactionLayer.addEventListener("click", () => {
-  addObject(
-    previewWeight,
-    Math.abs(200 - previewPosition[0]),
-    previewPosition[0] <= 200,
-    previewObject.style.backgroundColor
-  );
-  createObject(
-    previewWeight,
-    200 - previewPosition[0],
-    previewObject.style.backgroundColor,
-    previewPosition
-  );
-  log(
-    previewWeight,
-    previewPosition[0] <= 200,
-    Math.abs(200 - previewPosition[0])
-  );
+  state.objects.push([
+    state.previewWeight,
+    state.previewPosition[0],
+    state.color,
+  ]);
+
+  saveState(state);
+
+  createObject(state.previewWeight, state.previewPosition, state.color);
+
+  log(state.previewWeight, state.previewPosition[0]);
+
   calculateTiltAngle();
   calculateObjectsPosition();
-  setNextObject();
+
+  previewNextObject();
 });
 
-setNextObject();
-
 function calculateTiltAngle() {
-  if (!state.left.length && !state.right.length) return;
+  if (!state.objects.length) return;
 
-  updateLeftWeight(
-    state.left.reduce((weight, object) => weight + object[0], 0)
+  let [leftWeight, leftTorque, rightWeight, rightTorque] = state.objects.reduce(
+    (stats, object) => {
+      stats[object[1] <= 200 ? 0 : 2] += object[0];
+      stats[object[1] <= 200 ? 1 : 3] += object[0] * Math.abs(200 - object[1]);
+
+      return stats;
+    },
+    [0, 0, 0, 0]
   );
 
-  updateRightWeight(
-    state.right.reduce((weight, object) => weight + object[0], 0)
-  );
-
-  let leftTorque = state.left.reduce(
-    (torque, object) => torque + object[0] * object[1],
-    0
-  );
-  let rightTorque = state.right.reduce(
-    (torque, object) => torque + object[0] * object[1],
-    0
-  );
+  updateLeftWeight(leftWeight);
   updateLeftTorque(leftTorque);
   updateRightTorque(rightTorque);
+  updateRightWeight(rightWeight);
 
   //! Hyperbolic tangent for practicality, for now.
   state.tiltAngle =
     Math.round(Math.tanh(Math.log(rightTorque / leftTorque)) * 30 * 100) / 100;
+
   updateSeesaw(state.tiltAngle);
   updateTiltAngle(state.tiltAngle);
-  localStorage.setItem("seesaw", JSON.stringify(state));
+
+  saveState(state);
 }
 
 function calculateObjectsPosition() {
-  setTimeout(
-    () =>
-      [...objectContainer.children].map((object) => {
-        object.style.top = `${
-          Math.sin((-state.tiltAngle * Math.PI) / 180) * object.dataset.position
-        }px`;
-        object.style.left = `${
-          -Math.cos((-state.tiltAngle * Math.PI) / 180) *
-          object.dataset.position
-        }px`;
-      }),
-    4
-  );
+  let top, left;
+
+  [...objectContainer.children].map((object) => {
+    top =
+      Math.sin((-state.tiltAngle * Math.PI) / 180) *
+      (200 - object.dataset.distance);
+    left =
+      -Math.cos((-state.tiltAngle * Math.PI) / 180) *
+      (200 - object.dataset.distance);
+
+    updateObject(object, top, left);
+  });
 }
 
 resetButton.addEventListener("click", () => {
-  state = {
-    left: [],
-    right: [],
-    tiltAngle: 0,
-  };
-
+  state = resetState();
   resetAll();
-
-  localStorage.removeItem("seesaw");
 });
