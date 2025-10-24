@@ -1,20 +1,21 @@
 import {
   resetButton,
-  seesaw,
   objectContainer,
   interactionLayer,
   previewObject,
-  logSection,
 } from "./js/elements.js";
 
 import {
+  updateSeesaw,
   updateNextWeight,
   updateLeftWeight,
   updateLeftTorque,
   updateTiltAngle,
   updateRightTorque,
   updateRightWeight,
-  resetStats,
+  resetAll,
+  createObject,
+  log,
 } from "./js/ui.js";
 
 //TODO merge left & right, format state
@@ -48,16 +49,12 @@ function initialize() {
   updateLeftTorque(leftTorque);
   updateRightTorque(rightTorque);
 
-  seesaw.style.transform = `translateX(-50%) rotate(${state.tiltAngle}deg)`;
+  updateSeesaw(state.tiltAngle);
   updateTiltAngle(state.tiltAngle);
 
-  state.left.map((object) =>
-    createSeesawObject(object[0], object[1], object[2])
-  );
+  state.left.map((object) => createObject(object[0], object[1], object[2]));
 
-  state.right.map((object) =>
-    createSeesawObject(object[0], -object[1], object[2])
-  );
+  state.right.map((object) => createObject(object[0], -object[1], object[2]));
 
   calculateObjectsPosition();
 }
@@ -105,13 +102,13 @@ interactionLayer.addEventListener("click", () => {
     previewPosition[0] <= 200,
     previewObject.style.backgroundColor
   );
-  createSeesawObject(
+  createObject(
     previewWeight,
     200 - previewPosition[0],
     previewObject.style.backgroundColor,
     previewPosition
   );
-  addLog(
+  log(
     previewWeight,
     previewPosition[0] <= 200,
     Math.abs(200 - previewPosition[0])
@@ -148,7 +145,7 @@ function calculateTiltAngle() {
   //! Hyperbolic tangent for practicality, for now.
   state.tiltAngle =
     Math.round(Math.tanh(Math.log(rightTorque / leftTorque)) * 30 * 100) / 100;
-  seesaw.style.transform = `translateX(-50%) rotate(${state.tiltAngle}deg)`;
+  updateSeesaw(state.tiltAngle);
   updateTiltAngle(state.tiltAngle);
   localStorage.setItem("seesaw", JSON.stringify(state));
 }
@@ -176,38 +173,7 @@ resetButton.addEventListener("click", () => {
     tiltAngle: 0,
   };
 
-  resetStats();
-
-  seesaw.style.transform = `translateX(-50%) rotate(0deg)`;
+  resetAll();
 
   localStorage.removeItem("seesaw");
-
-  objectContainer.innerHTML = "";
-  logSection.innerHTML = "";
 });
-
-function createSeesawObject(weight, position, color, initialPosition) {
-  let object = document.createElement("div");
-  object.classList.add("object");
-  object.style.width = `${45 + (weight - 1) * 3}px`;
-  object.style.height = `${45 + (weight - 1) * 3}px`;
-  object.textContent = `${weight} kg`;
-  object.style.backgroundColor = color;
-  if (initialPosition) {
-    object.style.top = `${initialPosition[1] - 150}px`;
-    object.style.left = `${initialPosition[0] - 200}px`;
-  }
-  object.dataset.position = position;
-
-  objectContainer.append(object);
-}
-
-function addLog(weight, direction, distance) {
-  let newLog = document.createElement("div");
-  newLog.classList.add("initial");
-  newLog.textContent = `${weight}.0 kg was dropped on the ${
-    direction ? "left" : "right"
-  } side at ${distance}.0 cm (${distance}px) from the pivot.`;
-  logSection.insertBefore(newLog, logSection.firstElementChild);
-  setTimeout(() => newLog.classList.remove("initial"), 4);
-}
