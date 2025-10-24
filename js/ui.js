@@ -101,11 +101,6 @@ export function movePreviewObject(left, top, weight, tiltAngle) {
   previewObject.style.top = `${top}px`;
   previewObject.style.left = `${left}px`;
   previewObject.style.setProperty("--distance", `"${left - 200}px"`);
-  console.log(weight);
-  //   previewObject.style.setProperty(
-  //     "--line-height",
-  //     `${115 - top + Math.sin((-tiltAngle * Math.PI) / 180) * (400 - left)}px`
-  //   );
   previewObject.style.setProperty(
     "--line-height",
     `${

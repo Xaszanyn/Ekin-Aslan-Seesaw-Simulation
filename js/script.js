@@ -23,6 +23,8 @@ import {
 
 import { loadState, saveState, resetState } from "./storage.js";
 
+import { playWhoosh, playPop, playKeyPress } from "./sound.js";
+
 var state = loadState(); //* { objects, tiltAngle, nextWeight, previewWeight, previewPosition }
 
 function previewNextObject() {
@@ -75,6 +77,8 @@ interactionLayer.addEventListener("click", () => {
   calculateObjectsPosition();
 
   previewNextObject();
+
+  playPop();
 });
 
 function calculateTiltAngle() {
@@ -90,10 +94,14 @@ function calculateTiltAngle() {
     [0, 0, 0, 0]
   );
 
+  if (!leftTorque && !rightTorque) return; //* When objects are placed at the exact pivot.
+
   updateLeftWeight(leftWeight);
   updateLeftTorque(leftTorque);
   updateRightTorque(rightTorque);
   updateRightWeight(rightWeight);
+
+  let previousTiltAngle = state.tiltAngle ?? 0;
 
   //! Hyperbolic tangent for practicality, for now.
   state.tiltAngle =
@@ -103,6 +111,8 @@ function calculateTiltAngle() {
   updateTiltAngle(state.tiltAngle);
 
   saveState(state);
+
+  playWhoosh(Math.abs(previousTiltAngle - state.tiltAngle));
 }
 
 function calculateObjectsPosition() {
@@ -123,4 +133,5 @@ function calculateObjectsPosition() {
 resetButton.addEventListener("click", () => {
   state = resetState();
   resetAll();
+  playKeyPress();
 });
