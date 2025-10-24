@@ -3,6 +3,9 @@ import {
   objectContainer,
   interactionLayer,
   previewObject,
+  redThemeButton,
+  greenThemeButton,
+  blueThemeButton,
 } from "./elements.js";
 
 import {
@@ -135,3 +138,12 @@ resetButton.addEventListener("click", () => {
   resetAll();
   playKeyPress();
 });
+
+function setTheme(theme) {
+  document.body.className = `${theme}-theme`;
+  playKeyPress();
+}
+
+redThemeButton.addEventListener("click", () => setTheme("red"));
+greenThemeButton.addEventListener("click", () => setTheme("green"));
+blueThemeButton.addEventListener("click", () => setTheme("blue"));

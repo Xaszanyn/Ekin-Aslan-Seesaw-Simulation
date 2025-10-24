@@ -14,6 +14,9 @@ const [
   textRightWeight,
 ] = document.querySelectorAll(".text");
 
+const [redThemeButton, greenThemeButton, blueThemeButton] =
+  document.querySelectorAll("#theme-section button");
+
 export {
   resetButton,
   seesaw,
@@ -27,4 +30,7 @@ export {
   textTiltAngle,
   textRightTorque,
   textRightWeight,
+  redThemeButton,
+  greenThemeButton,
+  blueThemeButton,
 };

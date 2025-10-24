@@ -1,12 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <meta name="author" content="Ekin Aslan" />
+    <meta name="theme-color" content="#1e90ff;" />
+    <meta
+      name="description"
+      content="Interactive seesaw simulation demonstrating balance, torque, and weight distribution."
+    />
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Seesaw Simulation</title>
-    <link rel="stylesheet" href="./style.css" />
+    <link rel="stylesheet" href="./css/style.css" />
   </head>
-  <body>
+  <body class="blue-theme">
     <main>
       <section id="controls-section">
         <div id="next-weight">Next Weight <span class="text">0.0 kg</span></div>
@@ -15,7 +21,7 @@
       <section id="stats-section">
         <div>Left Weight <span class="text">0.0 kg</span></div>
         <div>Left Torque <span class="text">0.0 Nm</span></div>
-        <div>Tilt Angle <span class="text">0.0°</span></div>
+        <div>Tilt Angle <span class="text">0°</span></div>
         <div>Right Torque <span class="text">0.0 Nm</span></div>
         <div>Right Weight <span class="text">0.0 kg</span></div>
       </section>
@@ -31,6 +37,11 @@
       </section>
       <section id="log-section"></section>
     </main>
+    <section id="theme-section">
+      <button id="red-theme"><div></div></button>
+      <button id="green-theme"><div></div></button>
+      <button id="blue-theme"><div></div></button>
+    </section>
     <script src="./js/script.js" type="module"></script>
   </body>
 </html>

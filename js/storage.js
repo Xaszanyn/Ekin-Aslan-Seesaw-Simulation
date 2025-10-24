@@ -1,4 +1,4 @@
-const item = "seesaw-ekin";
+const item = "seesaw-ekin"; //* To avoid mixing with other local projects.
 
 function createInitialState() {
   return {
