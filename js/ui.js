@@ -96,8 +96,23 @@ export function updatePreviewObject(nextWeight, color) {
   previewObject.textContent = `${nextWeight} kg`;
 }
 
-export function movePreviewObject(left, top) {
+export function movePreviewObject(left, top, weight, tiltAngle) {
   previewObject.style.display = "flex";
   previewObject.style.top = `${top}px`;
   previewObject.style.left = `${left}px`;
+  previewObject.style.setProperty("--distance", `"${left - 200}px"`);
+  console.log(weight);
+  //   previewObject.style.setProperty(
+  //     "--line-height",
+  //     `${115 - top + Math.sin((-tiltAngle * Math.PI) / 180) * (400 - left)}px`
+  //   );
+  previewObject.style.setProperty(
+    "--line-height",
+    `${
+      115 -
+      top +
+      (weight - 1) * -1.5 +
+      (200 - left) * Math.tan((-tiltAngle * Math.PI) / 180)
+    }px`
+  );
 }

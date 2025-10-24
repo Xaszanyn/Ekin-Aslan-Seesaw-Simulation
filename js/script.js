@@ -50,7 +50,7 @@ function previewNextObject() {
 interactionLayer.addEventListener("mousemove", ({ offsetX, offsetY }) => {
   offsetX = Math.min(400, Math.max(0, offsetX));
   state.previewPosition = [offsetX, offsetY];
-  movePreviewObject(offsetX, offsetY);
+  movePreviewObject(offsetX, offsetY, state.previewWeight, state.tiltAngle);
 });
 
 interactionLayer.addEventListener(
