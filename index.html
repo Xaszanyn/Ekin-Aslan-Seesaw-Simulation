@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Seesaw Simulation</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <main>
+      <section>
+        <div>Next Weight <span>0.0 kg</span></div>
+        <button>Reset Seesaw</button>
+      </section>
+      <section>
+        <div>Left Weight <span>0.0 kg</span></div>
+        <div>Left Torque <span>0.0 Nm</span></div>
+        <div>Tilt Angle 0.0°</div>
+        <div>Right Torque <span>0.0 Nm</span></div>
+        <div>Right Weight <span>0.0 kg</span></div>
+      </section>
+      <section id="screen">
+        <div id="pivot"></div>
+        <div id="seesaw"></div>
+        <div id="seesaw-clickable"></div>
+      </section>
+      <section>
+        <div>
+          0.0 was dropped on the left side at 0.0 cm (0px) from the pivot.
+        </div>
+      </section>
+    </main>
+    <script src="./script.js"></script>
+  </body>
+</html>
