@@ -8,20 +8,20 @@
   </head>
   <body>
     <main>
-      <section>
-        <div>Next Weight <span>0.0 kg</span></div>
+      <section id="controls">
+        <div id="next-weight">Next Weight <span>0.0 kg</span></div>
         <button>Reset Seesaw</button>
       </section>
-      <section>
+      <section id="stats">
         <div>Left Weight <span>0.0 kg</span></div>
         <div>Left Torque <span>0.0 Nm</span></div>
-        <div>Tilt Angle 0.0°</div>
+        <div>Tilt Angle <span>0.0°</span></div>
         <div>Right Torque <span>0.0 Nm</span></div>
         <div>Right Weight <span>0.0 kg</span></div>
       </section>
       <section id="screen">
         <div id="pivot"></div>
-        <div id="seesaw"></div>
+        <div id="seesaw" style="transform: translateX(-50%) rotate(0deg)"></div>
         <div id="seesaw-clickable"></div>
       </section>
       <section>
