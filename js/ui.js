@@ -7,13 +7,14 @@ import {
   textRightWeight,
   objectContainer,
   logSection,
+  previewObject,
 } from "./elements.js";
 
 function updateText(element, value) {
   element.textContent = value;
 }
 
-function updateSeesaw(tiltAngle) {
+export function updateSeesaw(tiltAngle) {
   seesaw.style.transform = `translateX(-50%) rotate(${tiltAngle}deg)`;
 }
 
@@ -54,30 +55,47 @@ export function resetAll() {
   logSection.innerHTML = "";
 }
 
-export function createObject(weight, position, color, initialPosition) {
+export function createObject(weight, position, color) {
   let object = document.createElement("div");
   object.classList.add("object");
   object.style.width = `${45 + (weight - 1) * 3}px`;
   object.style.height = `${45 + (weight - 1) * 3}px`;
   object.textContent = `${weight} kg`;
+  object.style.top = `${position[1] - 150}px`;
+  object.style.left = `${position[0] - 200}px`;
+  object.dataset.distance = position[0];
   object.style.backgroundColor = color;
-  object.dataset.position = position;
-
-  if (initialPosition) {
-    object.style.top = `${initialPosition[1] - 150}px`;
-    object.style.left = `${initialPosition[0] - 200}px`;
-  }
 
   objectContainer.append(object);
 }
 
-export function log(weight, direction, distance) {
+export function updateObject(object, top, left) {
+  setTimeout(() => {
+    object.style.top = `${top}px`;
+    object.style.left = `${left}px`;
+  }, 4);
+}
+
+export function log(weight, distance) {
   let log = document.createElement("div");
   log.classList.add("initial");
   log.textContent = `${weight}.0 kg was dropped on the ${
-    direction ? "left" : "right"
-  } side at ${distance}.0 cm (${distance}px) from the pivot.`;
+    distance <= 200 ? "left" : "right"
+  } side at ${Math.abs(distance)}.0 cm (${distance}px) from the pivot.`;
 
   logSection.insertBefore(log, logSection.firstElementChild);
   setTimeout(() => log.classList.remove("initial"), 4);
+}
+
+export function updatePreviewObject(nextWeight, color) {
+  previewObject.style.width = `${45 + (nextWeight - 1) * 3}px`;
+  previewObject.style.height = `${45 + (nextWeight - 1) * 3}px`;
+  previewObject.style.backgroundColor = color;
+  previewObject.textContent = `${nextWeight} kg`;
+}
+
+export function movePreviewObject(left, top) {
+  previewObject.style.display = "flex";
+  previewObject.style.top = `${top}px`;
+  previewObject.style.left = `${left}px`;
 }
