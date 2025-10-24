@@ -46,7 +46,7 @@ main {
   align-items: center;
   font-size: 20px;
 
-  button {
+  #reset-button {
     border: none;
     background-color: var(--blue);
     color: var(--white);
@@ -113,14 +113,14 @@ main {
     transition: transform 0.25s;
   }
 
-  #seesaw-objects {
+  #object-container {
     position: absolute;
     left: 50%;
     top: 50%;
     transform: translate(-50%, 10px);
   }
 
-  #object-screen {
+  #interaction-layer {
     position: absolute;
     left: 50%;
     top: 50px;
@@ -130,7 +130,7 @@ main {
     cursor: none;
     user-select: none;
 
-    #preview {
+    #preview-object {
       opacity: 0.5;
       pointer-events: none;
       transition: width 0.25s, height 0.25s, color 0.25s;
@@ -159,7 +159,7 @@ main {
   background-color: var(--dark-blue);
 }
 
-#log {
+#log-section {
   height: 100px;
   background-color: var(--dark-gray);
   overflow-y: auto;

@@ -1,17 +1,21 @@
-const objectScreen = document.querySelector("#object-screen");
-const preview = document.querySelector("#preview");
-const nextWeightText = document.querySelector("#next-weight span");
-const seesaw = document.querySelector("#seesaw");
-const [
-  leftWeightText,
-  leftTorqueText,
-  tiltAngleText,
-  rightTorqueText,
-  rightWeightText,
-] = document.querySelectorAll("#stats span");
-const resetButton = document.querySelector("#reset");
-const seesawObjects = document.querySelector("#seesaw-objects");
-const log = document.querySelector("#log");
+import {
+  resetButton,
+  seesaw,
+  objectContainer,
+  interactionLayer,
+  previewObject,
+  logSection,
+} from "./js/elements.js";
+
+import {
+  updateNextWeight,
+  updateLeftWeight,
+  updateLeftTorque,
+  updateTiltAngle,
+  updateRightTorque,
+  updateRightWeight,
+  resetStats,
+} from "./js/ui.js";
 
 //TODO merge left & right, format state
 
@@ -26,14 +30,12 @@ function initialize() {
 
   if (!state.left.length && !state.right.length) return;
 
-  leftWeightText.textContent = `${state.left.reduce(
-    (weight, object) => weight + object[0],
-    0
-  )}.0 kg`;
-  rightWeightText.textContent = `${state.right.reduce(
-    (weight, object) => weight + object[0],
-    0
-  )}.0 kg`;
+  updateLeftWeight(
+    state.left.reduce((weight, object) => weight + object[0], 0)
+  );
+  updateRightWeight(
+    state.right.reduce((weight, object) => weight + object[0], 0)
+  );
 
   let leftTorque = state.left.reduce(
     (torque, object) => torque + object[0] * object[1],
@@ -43,11 +45,11 @@ function initialize() {
     (torque, object) => torque + object[0] * object[1],
     0
   );
-  leftTorqueText.textContent = `${leftTorque}.0 Nm`;
-  rightTorqueText.textContent = `${rightTorque}.0 Nm`;
+  updateLeftTorque(leftTorque);
+  updateRightTorque(rightTorque);
 
   seesaw.style.transform = `translateX(-50%) rotate(${state.tiltAngle}deg)`;
-  tiltAngleText.textContent = `${state.tiltAngle}°`;
+  updateTiltAngle(state.tiltAngle);
 
   state.left.map((object) =>
     createSeesawObject(object[0], object[1], object[2])
@@ -67,15 +69,15 @@ var previewWeight;
 var previewPosition;
 
 function setNextObject() {
-  preview.style.width = `${45 + (nextWeight - 1) * 3}px`;
-  preview.style.height = `${45 + (nextWeight - 1) * 3}px`;
-  preview.style.backgroundColor = `hsl(${Math.ceil(
+  previewObject.style.width = `${45 + (nextWeight - 1) * 3}px`;
+  previewObject.style.height = `${45 + (nextWeight - 1) * 3}px`;
+  previewObject.style.backgroundColor = `hsl(${Math.ceil(
     Math.random() * 360
   )} 100% 70%)`;
-  preview.textContent = `${nextWeight} kg`;
+  previewObject.textContent = `${nextWeight} kg`;
   previewWeight = nextWeight;
   nextWeight = Math.ceil(Math.random() * 10);
-  nextWeightText.textContent = `${nextWeight}.0 kg`;
+  updateNextWeight(nextWeight);
 }
 
 function addObject(weight, distance, direction, color) {
@@ -83,30 +85,30 @@ function addObject(weight, distance, direction, color) {
   localStorage.setItem("seesaw", JSON.stringify(state));
 }
 
-objectScreen.addEventListener("mousemove", ({ offsetX, offsetY }) => {
-  preview.style.display = "flex";
+interactionLayer.addEventListener("mousemove", ({ offsetX, offsetY }) => {
+  previewObject.style.display = "flex";
   offsetX = Math.min(400, Math.max(0, offsetX));
   previewPosition = [offsetX, offsetY];
-  preview.style.top = `${offsetY}px`;
-  preview.style.left = `${offsetX}px`;
+  previewObject.style.top = `${offsetY}px`;
+  previewObject.style.left = `${offsetX}px`;
 });
 
-objectScreen.addEventListener(
+interactionLayer.addEventListener(
   "mouseleave",
-  () => (preview.style.display = "none")
+  () => (previewObject.style.display = "none")
 );
 
-objectScreen.addEventListener("click", () => {
+interactionLayer.addEventListener("click", () => {
   addObject(
     previewWeight,
     Math.abs(200 - previewPosition[0]),
     previewPosition[0] <= 200,
-    preview.style.backgroundColor
+    previewObject.style.backgroundColor
   );
   createSeesawObject(
     previewWeight,
     200 - previewPosition[0],
-    preview.style.backgroundColor,
+    previewObject.style.backgroundColor,
     previewPosition
   );
   addLog(
@@ -124,14 +126,13 @@ setNextObject();
 function calculateTiltAngle() {
   if (!state.left.length && !state.right.length) return;
 
-  leftWeightText.textContent = `${state.left.reduce(
-    (weight, object) => weight + object[0],
-    0
-  )}.0 kg`;
-  rightWeightText.textContent = `${state.right.reduce(
-    (weight, object) => weight + object[0],
-    0
-  )}.0 kg`;
+  updateLeftWeight(
+    state.left.reduce((weight, object) => weight + object[0], 0)
+  );
+
+  updateRightWeight(
+    state.right.reduce((weight, object) => weight + object[0], 0)
+  );
 
   let leftTorque = state.left.reduce(
     (torque, object) => torque + object[0] * object[1],
@@ -141,21 +142,21 @@ function calculateTiltAngle() {
     (torque, object) => torque + object[0] * object[1],
     0
   );
-  leftTorqueText.textContent = `${leftTorque}.0 Nm`;
-  rightTorqueText.textContent = `${rightTorque}.0 Nm`;
+  updateLeftTorque(leftTorque);
+  updateRightTorque(rightTorque);
 
   //! Hyperbolic tangent for practicality, for now.
   state.tiltAngle =
     Math.round(Math.tanh(Math.log(rightTorque / leftTorque)) * 30 * 100) / 100;
   seesaw.style.transform = `translateX(-50%) rotate(${state.tiltAngle}deg)`;
-  tiltAngleText.textContent = `${state.tiltAngle}°`;
+  updateTiltAngle(state.tiltAngle);
   localStorage.setItem("seesaw", JSON.stringify(state));
 }
 
 function calculateObjectsPosition() {
   setTimeout(
     () =>
-      [...seesawObjects.children].map((object) => {
+      [...objectContainer.children].map((object) => {
         object.style.top = `${
           Math.sin((-state.tiltAngle * Math.PI) / 180) * object.dataset.position
         }px`;
@@ -175,17 +176,14 @@ resetButton.addEventListener("click", () => {
     tiltAngle: 0,
   };
 
-  leftWeightText.textContent = rightWeightText.textContent = "0.0 kg";
-  leftTorqueText.textContent = rightTorqueText.textContent = "0.0 Nm";
-
-  tiltAngleText.textContent = "0.0°";
+  resetStats();
 
   seesaw.style.transform = `translateX(-50%) rotate(0deg)`;
 
   localStorage.removeItem("seesaw");
 
-  seesawObjects.innerHTML = "";
-  log.innerHTML = "";
+  objectContainer.innerHTML = "";
+  logSection.innerHTML = "";
 });
 
 function createSeesawObject(weight, position, color, initialPosition) {
@@ -201,7 +199,7 @@ function createSeesawObject(weight, position, color, initialPosition) {
   }
   object.dataset.position = position;
 
-  seesawObjects.append(object);
+  objectContainer.append(object);
 }
 
 function addLog(weight, direction, distance) {
@@ -210,6 +208,6 @@ function addLog(weight, direction, distance) {
   newLog.textContent = `${weight}.0 kg was dropped on the ${
     direction ? "left" : "right"
   } side at ${distance}.0 cm (${distance}px) from the pivot.`;
-  log.insertBefore(newLog, log.firstElementChild);
+  logSection.insertBefore(newLog, logSection.firstElementChild);
   setTimeout(() => newLog.classList.remove("initial"), 4);
 }
