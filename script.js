@@ -49,7 +49,28 @@ objectScreen.addEventListener("click", () => {
     Math.abs(200 - previewPosition[0]),
     previewPosition[0] <= 200
   );
+  calculateTiltAngle();
   setNextObject();
 });
 
 setNextObject();
+
+function calculateTiltAngle() {
+  if (!state.left.length && !state.right.length) return;
+
+  let torqueLeft = state.left.reduce(
+    (torque, object) => torque + object[0] * object[1],
+    0
+  );
+  let torqueRight = state.right.reduce(
+    (torque, object) => torque + object[0] * object[1],
+    0
+  );
+
+  //! Hyperbolic tangent for practicality, for now.
+  state.tiltAngle =
+    Math.round(Math.tanh(Math.log(torqueRight / torqueLeft)) * 30 * 100) / 100;
+  seesaw.style.transform = `translateX(-50%) rotate(${state.tiltAngle}deg)`;
+
+  console.log(state.tiltAngle);
+}
