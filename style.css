@@ -111,6 +111,13 @@ main {
     transition: transform 0.25s;
   }
 
+  #seesaw-objects {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, 10px);
+  }
+
   #object-screen {
     position: absolute;
     left: 50%;
@@ -122,7 +129,6 @@ main {
     user-select: none;
 
     #preview {
-      position: absolute;
       opacity: 0.5;
       pointer-events: none;
       transition: width 0.25s, height 0.25s, color 0.25s;
@@ -141,13 +147,12 @@ main {
 }
 
 .object {
-  width: 50px;
-  height: 50px;
-  background-color: rgb(165, 255, 137);
   border-radius: 100%;
   transform: translate(-50%, -50%);
   display: flex;
   justify-content: center;
   align-items: center;
   font-weight: bold;
+  position: absolute;
+  transition: top 0.25s, left 0.25s;
 }

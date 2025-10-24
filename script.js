@@ -10,6 +10,7 @@ const [
   rightWeightText,
 ] = document.querySelectorAll("#stats span");
 const resetButton = document.querySelector("#reset");
+const seesawObjects = document.querySelector("#seesaw-objects");
 
 var state = {
   left: [],
@@ -57,7 +58,14 @@ objectScreen.addEventListener("click", () => {
     Math.abs(200 - previewPosition[0]),
     previewPosition[0] <= 200
   );
+  createSeesawObject(
+    previewWeight,
+    200 - previewPosition[0],
+    preview.style.backgroundColor,
+    previewPosition
+  );
   calculateTiltAngle();
+  calculateObjectsPosition();
   setNextObject();
 });
 
@@ -91,8 +99,22 @@ function calculateTiltAngle() {
     Math.round(Math.tanh(Math.log(rightTorque / leftTorque)) * 30 * 100) / 100;
   seesaw.style.transform = `translateX(-50%) rotate(${state.tiltAngle}deg)`;
   tiltAngleText.textContent = `${state.tiltAngle}°`;
+}
 
-  console.log(state.tiltAngle);
+function calculateObjectsPosition() {
+  setTimeout(
+    () =>
+      [...seesawObjects.children].map((object) => {
+        object.style.top = `${
+          Math.sin((-state.tiltAngle * Math.PI) / 180) * object.dataset.position
+        }px`;
+        object.style.left = `${
+          -Math.cos((-state.tiltAngle * Math.PI) / 180) *
+          object.dataset.position
+        }px`;
+      }),
+    4
+  );
 }
 
 resetButton.addEventListener("click", () => {
@@ -111,3 +133,22 @@ resetButton.addEventListener("click", () => {
 
   localStorage.removeItem("seesaw");
 });
+
+function createSeesawObject(weight, position, color, initialPosition) {
+  let object = document.createElement("div");
+  object.classList.add("object");
+  object.style.width = `${45 + (weight - 1) * 3}px`;
+  object.style.height = `${45 + (weight - 1) * 3}px`;
+  object.textContent = `${weight} kg`;
+  object.style.backgroundColor = color;
+  object.style.top = `${initialPosition[1] - 150}px`;
+  object.style.left = `${initialPosition[0] - 200}px`;
+  object.dataset.position = position;
+
+  seesawObjects.append(object);
+
+  //   setTimeout(() => {
+  //     object.style.top = `0px`;
+  //     object.style.left = `0px`;
+  //   }, 4);
+}
