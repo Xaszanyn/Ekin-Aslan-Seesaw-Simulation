@@ -32,7 +32,6 @@ var state = loadState(); //* { objects, tiltAngle, nextWeight, previewWeight, pr
 
 function previewNextObject() {
   state.color = `hsl(${Math.ceil(Math.random() * 360)} 100% 70%)`;
-  //TODO Themed Colors
   updatePreviewObject(state.nextWeight, state.color);
   state.previewWeight = state.nextWeight;
 
@@ -106,7 +105,6 @@ function calculateTiltAngle() {
 
   let previousTiltAngle = state.tiltAngle ?? 0;
 
-  //! Hyperbolic tangent for practicality, for now.
   state.tiltAngle =
     Math.round(Math.tanh(Math.log(rightTorque / leftTorque)) * 30 * 100) / 100;
 
