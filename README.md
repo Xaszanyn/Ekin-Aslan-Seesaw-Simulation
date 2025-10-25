@@ -2,6 +2,8 @@
 
 ![Cover](./img/cover.png)
 
+Introduction Video: [ekin.codes/seesaw-video.mp4](https://ekin.codes/seesaw-video.mp4)
+
 ## About
 
 Interactive seesaw simulation demonstrating balance, torque, and weight distribution. Written with HTML5, CSS and JavaScript.
@@ -54,8 +56,7 @@ Seesaw-Simulation/
 One of the most important design decisions was how to calculate the tilt angle. Simply using the ratio of torques did not produce a proper tilt angle. Applying the sigmoid hyperbolic tangent function resulted in a more realistic distribution of balance across the seesaw. In a fully realistic simulation, the seesaw would always increase its angle in the direction of the torque difference until reaching a maximum cap. However, in this project, the primary goal is to indicate the balance based on the relationship between the torques rather than perfectly simulating full physical behavior.
 
 ```javascript
-state.tiltAngle =
-  Math.round(Math.tanh(Math.log(rightTorque / leftTorque)) * 30 * 100) / 100;
+state.tiltAngle = Math.round(Math.tanh(Math.log(rightTorque / leftTorque)) * 30 * 100) / 100;
 ```
 
 ![Hyperbolic Tangent Graph](./img/hyperbolic-tangent.png)
