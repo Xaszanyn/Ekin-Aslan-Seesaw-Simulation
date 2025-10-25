@@ -24,7 +24,13 @@ import {
   movePreviewObject,
 } from "./ui.js";
 
-import { loadState, saveState, resetState } from "./storage.js";
+import {
+  loadState,
+  saveState,
+  resetState,
+  loadTheme,
+  saveTheme,
+} from "./storage.js";
 
 import { playWhoosh, playPop, playKeyPress } from "./sound.js";
 
@@ -49,6 +55,8 @@ function previewNextObject() {
   calculateObjectsPosition();
 
   previewNextObject();
+
+  setTheme(loadTheme());
 })();
 
 interactionLayer.addEventListener("mousemove", ({ offsetX, offsetY }) => {
@@ -139,6 +147,7 @@ resetButton.addEventListener("click", () => {
 
 function setTheme(theme) {
   document.body.className = `${theme}-theme`;
+  saveTheme(theme);
   playKeyPress();
 }
 

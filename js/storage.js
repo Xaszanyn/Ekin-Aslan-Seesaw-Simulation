@@ -1,4 +1,5 @@
 const item = "seesaw-ekin"; //* To avoid mixing with other local projects.
+const themeItem = "seesaw-theme-ekin";
 
 function createInitialState() {
   return {
@@ -22,4 +23,12 @@ export function saveState(state) {
 export function resetState() {
   localStorage.removeItem(item);
   return createInitialState();
+}
+
+export function loadTheme() {
+  return localStorage.getItem(themeItem) ?? "blue";
+}
+
+export function saveTheme(theme) {
+  localStorage.setItem(themeItem, theme);
 }
