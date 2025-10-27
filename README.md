@@ -21,7 +21,7 @@ Interactive seesaw simulation demonstrating balance, torque, and weight distribu
 View the live demo: [Seesaw Simulation Web Page](https://xaszanyn.github.io/Ekin-Aslan-Seesaw-Simulation/)
 
 To run the project locally, clone the repository and open with Live Server:<br />
-`git clone https://github.com/username/repo.git`
+`git clone https://github.com/Xaszanyn/Ekin-Aslan-Seesaw-Simulation.git`
 
 ## Design Approach
 
